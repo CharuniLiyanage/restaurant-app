@@ -15,6 +15,8 @@ export default function Navbar() {
         <a href="/" style={{ margin: '10px', color: 'white' }}>Home</a>
         <a href="/menu" style={{ margin: '10px', color: 'white' }}>Menu</a>
         <a href="/contact" style={{ margin: '10px', color: 'white' }}>Contact</a>
+        <Link to="/cart">Cart 🛒</Link>
+        <Link to="/reservation">Reservation 📅</Link>
       </div>
     </nav>
   );
