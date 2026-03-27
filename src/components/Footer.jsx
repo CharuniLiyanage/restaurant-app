@@ -5,9 +5,9 @@ export default function Footer() {
       color: "white",
       textAlign: "center",
       padding: "15px",
-      position: "fixed",
-      bottom: "0",
-      width: "100%"
+      //position: "fixed",
+      // bottom: "0",
+      // width: "100%"
     }}>
       <p>© 2026 Delicious Bites. All rights reserved.</p>
     </footer>

@@ -8,6 +8,7 @@ export default function Cart() {
     (sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 1),
     0
   );
+  
 
   return (
     <div style={{ padding: "40px", minHeight: "80vh", maxWidth: "800px", margin: "0 auto" }}>

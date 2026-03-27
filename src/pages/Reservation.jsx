@@ -1,8 +1,12 @@
+// src/pages/Reservation.jsx
 import { useState } from "react";
-import "./Reservation.css"; // make sure to create this file
-import Reviews from "./Reviews";
+import { useAdmin } from "../context/AdminContext";
+import "./Reservation.css";
 
 export default function Reservation() {
+  // ✅ include updateReservationStatus
+  const { reservations, addReservation, updateReservationStatus } = useAdmin();
+
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -13,15 +17,20 @@ export default function Reservation() {
 
   const [submitted, setSubmitted] = useState(false);
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Reservation Data:", form);
+    addReservation(form);
     setSubmitted(true);
     setForm({ name: "", phone: "", date: "", time: "", guests: "" });
+  };
+
+  const getStatusColor = (status) => {
+    if (status === "Confirmed") return "green";
+    if (status === "Cancelled") return "red";
+    return "orange";
   };
 
   return (
@@ -91,10 +100,65 @@ export default function Reservation() {
         />
 
         <button type="submit">Book Now</button>
-
-        <Reviews />
-        
       </form>
+
+      <h2>Your Reservations</h2>
+      {reservations.length === 0 && <p>No reservations yet.</p>}
+
+      {reservations.map((r) => {
+        const status = r.status || "Pending"; // ✅ handle old data
+
+        return (
+          <div
+            key={r.id}
+            style={{
+              border: "1px solid #ccc",
+              padding: "10px",
+              marginBottom: "10px",
+              borderRadius: "5px",
+            }}
+          >
+            <p><strong>Name:</strong> {r.name}</p>
+            <p><strong>Phone:</strong> {r.phone}</p>
+            <p><strong>Date:</strong> {r.date}</p>
+            <p><strong>Time:</strong> {r.time}</p>
+            <p><strong>Guests:</strong> {r.guests}</p>
+
+            <p>
+              <strong>Status:</strong>{" "}
+              <span
+                style={{
+                  color: getStatusColor(status),
+                  fontWeight: "bold",
+                }}
+              >
+                {status}
+              </span>
+            </p>
+
+            {/* ✅ CUSTOMER CANCEL BUTTON */}
+            {status === "Pending" && (
+              <button
+                onClick={() => {
+                  if (window.confirm("Cancel this reservation?")) {
+                    updateReservationStatus(r.id, "Cancelled");
+                  }
+                }}
+                style={{
+                  marginTop: "10px",
+                  padding: "6px 12px",
+                  backgroundColor: "red",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                }}
+              >
+                Cancel Reservation
+              </button>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
