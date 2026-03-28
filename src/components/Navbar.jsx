@@ -38,11 +38,12 @@ export default function Navbar() {
       <div style={{ display: "flex", alignItems: "center" }}>
         <Link to="/" style={linkStyle}>Home</Link>
 
-        {!isAdminLoggedIn && (
+        {!isAdminLoggedIn && user && (
           <>
             <Link to="/menu" style={linkStyle}>Menu</Link>
             <Link to="/cart" style={linkStyle}>Cart 🛒</Link>
             <Link to="/reservation" style={linkStyle}>Reservation 📅</Link>
+            <Link to="/my-orders" style={linkStyle}>My Orders</Link>
           </>
         )}
 
@@ -65,9 +66,7 @@ export default function Navbar() {
 
         {!isAdminLoggedIn && user && (
           <>
-            <span style={{ marginRight: "10px", fontWeight: "500", color: "#ddd" }}>
-              👤 {user.name}
-            </span>
+            <span style={{ marginRight: "10px", fontWeight: "500", color: "#ddd" }}>👤 {user.name}</span>
             <button onClick={logout} style={logoutBtn}>Logout</button>
           </>
         )}

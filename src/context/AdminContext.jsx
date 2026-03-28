@@ -19,8 +19,35 @@ export function AdminProvider({ children }) {
   // -------------------------
   // ORDERS
   // -------------------------
-  const [orders, setOrders] = useState([]);
-  const addOrder = (order) => setOrders((prev) => [...prev, { ...order, id: Date.now() }]);
+  const [orders, setOrders] = useState(() => {
+    const saved = localStorage.getItem("orders");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const addOrder = (order) => {
+    const newOrder = { ...order, id: Date.now(), confirmed: false }; // add confirmed flag
+    setOrders((prev) => {
+      const updated = [...prev, newOrder];
+      localStorage.setItem("orders", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const confirmOrder = (id) => {
+    setOrders((prev) => {
+      const updated = prev.map((o) => (o.id === id ? { ...o, confirmed: true } : o));
+      localStorage.setItem("orders", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const removeOrder = (id) => {
+    setOrders((prev) => {
+      const updated = prev.filter((o) => o.id !== id);
+      localStorage.setItem("orders", JSON.stringify(updated));
+      return updated;
+    });
+  };
 
   // -------------------------
   // MESSAGES
@@ -29,15 +56,13 @@ export function AdminProvider({ children }) {
   const addMessage = (msg) => setMessages((prev) => [...prev, { ...msg, id: Date.now() }]);
 
   // -------------------------
+  // RESERVATIONS
   // -------------------------
-// RESERVATIONS (FIXED)
-// -------------------------
   const [reservations, setReservations] = useState(() => {
     const saved = localStorage.getItem("reservations");
     return saved ? JSON.parse(saved) : [];
   });
 
-  // save to localStorage whenever change
   useEffect(() => {
     localStorage.setItem("reservations", JSON.stringify(reservations));
   }, [reservations]);
@@ -45,21 +70,23 @@ export function AdminProvider({ children }) {
   const addReservation = (reservation) => {
     setReservations((prev) => [
       ...prev,
-      {
-        ...reservation,
-        id: Date.now(),
-        status: "Pending", // default
-      },
+      { ...reservation, id: Date.now(), status: "Pending" }
     ]);
   };
 
-const updateReservationStatus = (id, status) => {
-  setReservations((prev) =>
-    prev.map((r) =>
-      r.id === id ? { ...r, status } : r
-    )
-  );
-};
+  const updateReservationStatus = (id, status) => {
+    setReservations((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, status } : r))
+    );
+  };
+
+  const deleteReservation = (id) => {
+    setReservations((prev) => prev.filter((r) => r.id !== id));
+  };
+
+  const clearReservations = () => {
+    setReservations([]);
+  };
 
   // -------------------------
   // REVIEWS
@@ -88,17 +115,6 @@ const updateReservationStatus = (id, status) => {
   const updateItem = (updatedItem) =>
     setMenuItems((prev) => prev.map((item) => (item.id === updatedItem.id ? updatedItem : item)));
 
-  // DELETE ONE
-  const deleteReservation = (id) => {
-    setReservations((prev) => prev.filter((r) => r.id !== id));
-  };
-
-  // CLEAR ALL
-  const clearReservations = () => {
-    setReservations([]);
-  };
-
-
   // -------------------------
   // PROVIDER VALUE
   // -------------------------
@@ -109,20 +125,27 @@ const updateReservationStatus = (id, status) => {
         addMenuItem,
         deleteItem,
         updateItem,
+
         orders,
         addOrder,
+        confirmOrder,
+        removeOrder,
+
         messages,
         addMessage,
+
         reservations,
         addReservation,
         updateReservationStatus,
+        deleteReservation,
+        clearReservations,
+
         reviews,
         addReview,
+
         login,
         logout,
-        isAdminLoggedIn,
-        deleteReservation, 
-        clearReservations 
+        isAdminLoggedIn
       }}
     >
       {children}

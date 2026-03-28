@@ -12,6 +12,7 @@ import Menu from "./pages/Menu";
 import Contact from "./pages/Contact";
 import Cart from "./pages/Cart";
 import Reservation from "./pages/Reservation";
+import MyOrders from "./pages/MyOrders";
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -19,7 +20,7 @@ import Register from "./pages/Register";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminReservations from "./pages/AdminReservations";
-
+import AdminOrders from "./pages/AdminOrders";
 
 // 🔐 User Protected Route
 function UserRoute({ children }) {
@@ -35,7 +36,7 @@ function AdminRoute({ children }) {
 
 function App() {
   return (
-    <AuthProvider> {/* ✅ NEW */}
+    <AuthProvider>
       <AdminProvider>
         <CartProvider>
           <Router>
@@ -47,44 +48,20 @@ function App() {
                   {/* PUBLIC */}
                   <Route path="/" element={<Home />} />
                   <Route path="/contact" element={<Contact />} />
-
-                  {/* AUTH */}
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
 
                   {/* USER PROTECTED */}
-                  <Route path="/menu" element={
-                    <UserRoute>
-                      <Menu />
-                    </UserRoute>
-                  } />
-
-                  <Route path="/cart" element={
-                    <UserRoute>
-                      <Cart />
-                    </UserRoute>
-                  } />
-
-                  <Route path="/reservation" element={
-                    <UserRoute>
-                      <Reservation />
-                    </UserRoute>
-                  } />
+                  <Route path="/menu" element={<UserRoute><Menu /></UserRoute>} />
+                  <Route path="/cart" element={<UserRoute><Cart /></UserRoute>} />
+                  <Route path="/reservation" element={<UserRoute><Reservation /></UserRoute>} />
+                  <Route path="/my-orders" element={<UserRoute><MyOrders /></UserRoute>} />
 
                   {/* ADMIN */}
                   <Route path="/admin-login" element={<AdminLogin />} />
-
-                  <Route path="/admin" element={
-                    <AdminRoute>
-                      <AdminDashboard />
-                    </AdminRoute>
-                  } />
-
-                  <Route path="/admin-reservations" element={
-                    <AdminRoute>
-                      <AdminReservations />
-                    </AdminRoute>
-                  } />
+                  <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+                  <Route path="/admin-reservations" element={<AdminRoute><AdminReservations /></AdminRoute>} />
+                  <Route path="/admin-orders" element={<AdminOrders />} />
                 </Routes>
               </main>
 
