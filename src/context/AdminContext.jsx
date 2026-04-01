@@ -25,7 +25,7 @@ export function AdminProvider({ children }) {
   });
 
   const addOrder = (order) => {
-    const newOrder = { ...order, id: Date.now(), confirmed: false }; // add confirmed flag
+    const newOrder = { ...order, id: Date.now(), confirmed: false };
     setOrders((prev) => {
       const updated = [...prev, newOrder];
       localStorage.setItem("orders", JSON.stringify(updated));
@@ -84,9 +84,7 @@ export function AdminProvider({ children }) {
     setReservations((prev) => prev.filter((r) => r.id !== id));
   };
 
-  const clearReservations = () => {
-    setReservations([]);
-  };
+  const clearReservations = () => setReservations([]);
 
   // -------------------------
   // REVIEWS
@@ -111,9 +109,21 @@ export function AdminProvider({ children }) {
   // MENU OPERATIONS
   // -------------------------
   const addMenuItem = (item) => setMenuItems((prev) => [...prev, item]);
-  const deleteItem = (id) => setMenuItems((prev) => prev.filter((item) => item.id !== id));
-  const updateItem = (updatedItem) =>
-    setMenuItems((prev) => prev.map((item) => (item.id === updatedItem.id ? updatedItem : item)));
+  const deleteMenuItem = (id) =>
+    setMenuItems((prev) => prev.filter((item) => item.id !== id));
+
+  const updateMenuItem = (updatedItem) =>
+    setMenuItems((prev) =>
+      prev.map((item) =>
+        item.id === updatedItem.id ? updatedItem : item
+      )
+    );
+
+  // -------------------------
+  // ALIASES for AdminDashboard
+  // -------------------------
+  const updateItem = updateMenuItem;
+  const deleteItem = deleteMenuItem;
 
   // -------------------------
   // PROVIDER VALUE
@@ -123,8 +133,12 @@ export function AdminProvider({ children }) {
       value={{
         menuItems,
         addMenuItem,
-        deleteItem,
+        updateMenuItem,
+        deleteMenuItem,
+
+        // Aliases to match your AdminDashboard code
         updateItem,
+        deleteItem,
 
         orders,
         addOrder,
