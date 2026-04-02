@@ -3,18 +3,29 @@ import { useAdmin } from "../context/AdminContext";
 import { useState } from "react";
 
 export default function AdminDashboard() {
-  const { 
-    orders, 
-    confirmOrder, 
-    removeOrder, 
-    reviews, 
+  const {
+    orders,
+    confirmOrder,
+    removeOrder,
     menuItems,
     addMenuItem,
-    updateItem, // fixed function name
-    deleteItem // fixed function name
+    updateItem,
+    deleteItem
   } = useAdmin();
 
   const [tab, setTab] = useState("orders");
+
+  // ---------------- STYLES ----------------
+  const thStyle = {
+    padding: "10px",
+    textAlign: "left",
+    borderBottom: "2px solid #ccc"
+  };
+
+  const tdStyle = {
+    padding: "10px",
+    verticalAlign: "top"
+  };
 
   // ---------------- FORM STATES ----------------
   const [newItemName, setNewItemName] = useState("");
@@ -22,9 +33,6 @@ export default function AdminDashboard() {
   const [newItemImg, setNewItemImg] = useState("");
   const [newItemCategory, setNewItemCategory] = useState("Rice & Main Dishes");
   const [editingId, setEditingId] = useState(null);
-
-  const pendingOrders = orders.filter(o => !o.confirmed);
-  const confirmedOrders = orders.filter(o => o.confirmed);
 
   // ---------------- ADD ITEM ----------------
   const handleAddMenuItem = () => {
@@ -90,76 +98,138 @@ export default function AdminDashboard() {
       {/* ---------------- TABS ---------------- */}
       <div style={{ margin: "20px 0", display: "flex", gap: "10px" }}>
         <button onClick={() => setTab("orders")}>Orders</button>
-        <button onClick={() => setTab("reviews")}>Reviews</button>
+        {/* <button onClick={() => setTab("reviews")}>Reviews</button> */}
         <button onClick={() => setTab("menu")}>Menu Items</button>
       </div>
 
       {/* ================= ORDERS ================= */}
       {tab === "orders" && (
         <div>
-          <h2>Pending Orders</h2>
-          {pendingOrders.length === 0 ? <p>No pending orders.</p> :
-            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <h2>All Orders</h2>
+
+          {orders.length === 0 ? (
+            <p>No orders available.</p>
+          ) : (
+            <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "10px" }}>
               <thead>
-                <tr>
-                  <th>Customer</th>
-                  <th>Items</th>
-                  <th>Total</th>
-                  <th>Actions</th>
+                <tr style={{ background: "#f5f5f5" }}>
+                  <th style={thStyle}>Customer</th>
+                  <th style={thStyle}>Contact</th>
+                  <th style={thStyle}>Address</th>
+                  <th style={thStyle}>Items</th>
+                  <th style={thStyle}>Total</th>
+                  <th style={thStyle}>Payment</th>
+                  <th style={thStyle}>Date</th>
+                  <th style={thStyle}>Status</th>
+                  <th style={thStyle}>Actions</th>
                 </tr>
               </thead>
+
               <tbody>
-                {pendingOrders.map(order => (
-                  <tr key={order.id}>
-                    <td>{order.customerName}</td>
-                    <td>{order.items.map(i => i.name).join(", ")}</td>
-                    <td>Rs. {order.items.reduce((sum, i) => sum + i.price * i.quantity, 0)}</td>
-                    <td>
-                      <button onClick={() => confirmOrder(order.id)}>Confirm</button>
-                      <button onClick={() => removeOrder(order.id)}>Remove</button>
-                    </td>
-                  </tr>
-                ))}
+                {orders.map((order) => {
+                  const total = order.items?.reduce(
+                    (sum, i) => sum + i.price * i.quantity,
+                    0
+                  ) || 0;
+
+                  return (
+                    <tr key={order.date} style={{ borderBottom: "1px solid #ddd" }}>
+                      <td style={tdStyle}>{order.details?.name || "N/A"}</td>
+
+                      <td style={tdStyle}>
+                        {order.details?.phone1 || "-"} <br />
+                        {order.details?.phone2 || "-"}
+                      </td>
+
+                      <td style={tdStyle}>
+                        {order.details?.address || "-"} <br />
+                        <small>{order.details?.location || "-"}</small>
+                      </td>
+
+                      <td style={tdStyle}>
+                        {order.items?.map((item) => (
+                          <div key={item.id}>
+                            {item.name} × {item.quantity}
+                          </div>
+                        ))}
+                      </td>
+
+                      <td style={tdStyle}>Rs. {total}</td>
+
+                      <td style={tdStyle}>
+                        {order.details?.paymentMethod || "N/A"}
+                      </td>
+
+                      <td style={tdStyle}>
+                        {order.date
+                          ? new Date(order.date).toLocaleString()
+                          : "N/A"}
+                      </td>
+
+                      <td style={tdStyle}>
+                        <span
+                          style={{
+                            padding: "5px 10px",
+                            borderRadius: "20px",
+                            color: "#fff",
+                            background: order.confirmed ? "green" : "orange"
+                          }}
+                        >
+                          {order.confirmed ? "Confirmed" : "Pending"}
+                        </span>
+                      </td>
+
+                      <td style={tdStyle}>
+                        {!order.confirmed && (
+                          <button onClick={() => confirmOrder(order.date)}>
+                            Confirm
+                          </button>
+                        )}
+                        <button
+                          style={{
+                            marginLeft: "5px",
+                            background: "red",
+                            color: "#fff"
+                          }}
+                          onClick={() => removeOrder(order.date)}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
-          }
-
-          <h2 style={{ marginTop: "30px" }}>Confirmed Orders</h2>
-          {confirmedOrders.length === 0 ? <p>No confirmed orders.</p> :
-            <ul>
-              {confirmedOrders.map(order => (
-                <li key={order.id}>
-                  {order.customerName} - Rs. {order.items.reduce((sum, i) => sum + i.price * i.quantity, 0)}
-                </li>
-              ))}
-            </ul>
-          }
+          )}
         </div>
       )}
 
-      {/* ================= REVIEWS ================= */}
+      {/* ================= REVIEWS =================
       {tab === "reviews" && (
         <div>
           <h2>All Reviews</h2>
-          {reviews.length === 0 ? <p>No reviews yet.</p> :
-            reviews.map(r => (
+          {reviews.length === 0 ? (
+            <p>No reviews yet.</p>
+          ) : (
+            reviews.map((r) => (
               <div key={r.id} style={{ borderBottom: "1px solid #ccc", padding: "10px 0" }}>
                 <p>
-                  <strong>{menuItems.find(i => i.id === r.itemId)?.name || "Item"}:</strong> {r.text}
+                  <strong>Review:</strong> {r.review}
                 </p>
-                <p>{"⭐".repeat(r.rating)} - {new Date(r.date).toLocaleDateString()}</p>
+                <p>{"⭐".repeat(r.rating)}</p>
+                <small>{new Date(r.date).toLocaleDateString()}</small>
               </div>
             ))
-          }
+          )}
         </div>
-      )}
+      )} */}
 
       {/* ================= MENU ================= */}
       {tab === "menu" && (
         <div>
           <h2>Menu Items</h2>
 
-          {/* ----------- FORM ----------- */}
           <div style={{ marginBottom: "20px", padding: "15px", border: "1px solid #ccc", borderRadius: "8px" }}>
             <h3>{editingId ? "Edit Item" : "Add New Item"}</h3>
 
@@ -177,7 +247,6 @@ export default function AdminDashboard() {
               onChange={(e) => setNewItemPrice(e.target.value)}
             />
 
-            {/* File upload */}
             <input
               type="file"
               accept="image/*"
@@ -190,12 +259,14 @@ export default function AdminDashboard() {
               }}
             />
 
-            {/* Image preview */}
             {newItemImg && (
-              <img src={newItemImg} alt="Preview" style={{ width: "100px", marginTop: "10px", borderRadius: "8px" }} />
+              <img
+                src={newItemImg}
+                alt="Preview"
+                style={{ width: "100px", marginTop: "10px", borderRadius: "8px" }}
+              />
             )}
 
-            {/* CATEGORY */}
             <select
               value={newItemCategory}
               onChange={(e) => setNewItemCategory(e.target.value)}
@@ -214,21 +285,29 @@ export default function AdminDashboard() {
             )}
           </div>
 
-          {/* ----------- MENU LIST ----------- */}
-          {menuItems.length === 0 ? <p>No items added.</p> :
-            menuItems.map(item => (
-              <div key={item.id} style={{
-                border: "1px solid #eee",
-                padding: "10px",
-                marginBottom: "10px",
-                borderRadius: "8px",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center"
-              }}>
+          {menuItems.length === 0 ? (
+            <p>No items added.</p>
+          ) : (
+            menuItems.map((item) => (
+              <div
+                key={item.id}
+                style={{
+                  border: "1px solid #eee",
+                  padding: "10px",
+                  marginBottom: "10px",
+                  borderRadius: "8px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}
+              >
                 <div>
-                  <p><strong>{item.name}</strong> - Rs. {item.price}</p>
-                  <p style={{ fontSize: "12px", color: "#666" }}>{item.category}</p>
+                  <p>
+                    <strong>{item.name}</strong> - Rs. {item.price}
+                  </p>
+                  <p style={{ fontSize: "12px", color: "#666" }}>
+                    {item.category}
+                  </p>
                   {item.image && (
                     <img src={item.image} alt={item.name} style={{ width: "80px" }} />
                   )}
@@ -236,11 +315,13 @@ export default function AdminDashboard() {
 
                 <div>
                   <button onClick={() => handleEditItem(item)}>Edit</button>
-                  <button onClick={() => handleDeleteItem(item.id)}>Delete</button>
+                  <button onClick={() => handleDeleteItem(item.id)}>
+                    Delete
+                  </button>
                 </div>
               </div>
             ))
-          }
+          )}
         </div>
       )}
     </div>

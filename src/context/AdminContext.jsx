@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 export const AdminContext = createContext();
 
 export function AdminProvider({ children }) {
+
   // -------------------------
   // MENU ITEMS
   // -------------------------
@@ -24,36 +25,41 @@ export function AdminProvider({ children }) {
     return saved ? JSON.parse(saved) : [];
   });
 
+  useEffect(() => {
+    localStorage.setItem("orders", JSON.stringify(orders));
+  }, [orders]);
+
+  // ADD ORDER
   const addOrder = (order) => {
-    const newOrder = { ...order, id: Date.now(), confirmed: false };
-    setOrders((prev) => {
-      const updated = [...prev, newOrder];
-      localStorage.setItem("orders", JSON.stringify(updated));
-      return updated;
-    });
+    const newOrder = {
+      ...order,
+      confirmed: false
+    };
+    setOrders((prev) => [...prev, newOrder]);
   };
 
-  const confirmOrder = (id) => {
-    setOrders((prev) => {
-      const updated = prev.map((o) => (o.id === id ? { ...o, confirmed: true } : o));
-      localStorage.setItem("orders", JSON.stringify(updated));
-      return updated;
-    });
+  // CONFIRM ORDER (use date)
+  const confirmOrder = (date) => {
+    setOrders((prev) =>
+      prev.map((o) =>
+        o.date === date ? { ...o, confirmed: true } : o
+      )
+    );
   };
 
-  const removeOrder = (id) => {
-    setOrders((prev) => {
-      const updated = prev.filter((o) => o.id !== id);
-      localStorage.setItem("orders", JSON.stringify(updated));
-      return updated;
-    });
+  // DELETE ORDER (use date)
+  const removeOrder = (date) => {
+    setOrders((prev) =>
+      prev.filter((o) => o.date !== date)
+    );
   };
 
   // -------------------------
   // MESSAGES
   // -------------------------
   const [messages, setMessages] = useState([]);
-  const addMessage = (msg) => setMessages((prev) => [...prev, { ...msg, id: Date.now() }]);
+  const addMessage = (msg) =>
+    setMessages((prev) => [...prev, { ...msg, id: Date.now() }]);
 
   // -------------------------
   // RESERVATIONS
@@ -81,21 +87,34 @@ export function AdminProvider({ children }) {
   };
 
   const deleteReservation = (id) => {
-    setReservations((prev) => prev.filter((r) => r.id !== id));
+    setReservations((prev) =>
+      prev.filter((r) => r.id !== id)
+    );
   };
 
   const clearReservations = () => setReservations([]);
 
   // -------------------------
-  // REVIEWS
+  // REVIEWS (SYNC WITH LOCAL STORAGE)
   // -------------------------
-  const [reviews, setReviews] = useState([]);
-  const addReview = (review) => setReviews((prev) => [...prev, { ...review, id: Date.now() }]);
+  const [reviews, setReviews] = useState(() => {
+    const saved = localStorage.getItem("reviews");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("reviews", JSON.stringify(reviews));
+  }, [reviews]);
+
+  const addReview = (review) => {
+    setReviews((prev) => [...prev, { ...review, id: Date.now() }]);
+  };
 
   // -------------------------
   // ADMIN LOGIN
   // -------------------------
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+
   const login = (password) => {
     if (password === "admin123") {
       setIsAdminLoggedIn(true);
@@ -103,14 +122,19 @@ export function AdminProvider({ children }) {
     }
     return false;
   };
+
   const logout = () => setIsAdminLoggedIn(false);
 
   // -------------------------
   // MENU OPERATIONS
   // -------------------------
-  const addMenuItem = (item) => setMenuItems((prev) => [...prev, item]);
+  const addMenuItem = (item) =>
+    setMenuItems((prev) => [...prev, item]);
+
   const deleteMenuItem = (id) =>
-    setMenuItems((prev) => prev.filter((item) => item.id !== id));
+    setMenuItems((prev) =>
+      prev.filter((item) => item.id !== id)
+    );
 
   const updateMenuItem = (updatedItem) =>
     setMenuItems((prev) =>
@@ -119,14 +143,12 @@ export function AdminProvider({ children }) {
       )
     );
 
-  // -------------------------
-  // ALIASES for AdminDashboard
-  // -------------------------
+  // Aliases (for your AdminDashboard)
   const updateItem = updateMenuItem;
   const deleteItem = deleteMenuItem;
 
   // -------------------------
-  // PROVIDER VALUE
+  // PROVIDER
   // -------------------------
   return (
     <AdminContext.Provider
@@ -135,8 +157,6 @@ export function AdminProvider({ children }) {
         addMenuItem,
         updateMenuItem,
         deleteMenuItem,
-
-        // Aliases to match your AdminDashboard code
         updateItem,
         deleteItem,
 
