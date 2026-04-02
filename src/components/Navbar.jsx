@@ -32,7 +32,7 @@ export default function Navbar() {
       justifyContent: "space-between",
       alignItems: "center"
     }}>
-      <h2>Delicious Foods</h2>
+      <h2>The Foodie Spot</h2>
 
       {/* LINKS */}
       <div style={{ display: "flex", alignItems: "center" }}>
@@ -41,8 +41,8 @@ export default function Navbar() {
         {!isAdminLoggedIn && user && (
           <>
             <Link to="/menu" style={linkStyle}>Menu</Link>
-            <Link to="/cart" style={linkStyle}>Cart 🛒</Link>
-            <Link to="/reservation" style={linkStyle}>Reservation 📅</Link>
+            <Link to="/cart" style={linkStyle}>Cart </Link>
+            <Link to="/reservation" style={linkStyle}>Reservation </Link>
             <Link to="/my-orders" style={linkStyle}>My Orders</Link>
           </>
         )}

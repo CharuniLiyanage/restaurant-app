@@ -1,6 +1,6 @@
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import hero from '../assets/hero.jpg';
+import hero from '../assets/hero1.jpg';
 
 export default function Home() {
   const { user } = useAuth();
@@ -16,9 +16,8 @@ export default function Home() {
 
   return (
     <div style={{
-      height: "100vh",           // full viewport height
-      margin: 0,                 // remove body margin
-      padding: 0,                // remove body padding
+      height: "100vh",          
+      width: "100%",
       backgroundImage: `url(${hero})`,
       backgroundSize: "cover",
       backgroundPosition: "center",

@@ -14,7 +14,7 @@ export default function Footer() {
       
       {/* Contact Info */}
       <div style={{ marginBottom: "15px" }}>
-        <p style={{ margin: "5px 0" }}>📞 +94 77 123 4567 | ✉️ contact@deliciousbites.com</p>
+        <p style={{ margin: "5px 0" }}>📞 +94 77 123 4567 | ✉️ contact@foodiespot.com</p>
         <p style={{ margin: "5px 0" }}>🏠 123 Main Street, Colombo, Sri Lanka</p>
       </div>
 
@@ -58,7 +58,7 @@ export default function Footer() {
 
       {/* Copyright */}
       <p style={{ marginTop: "10px", fontSize: "13px", color: "#ccc" }}>
-        © 2026 Delicious Bites. All rights reserved.
+        © 2026 The Foodie Spot. All rights reserved.
       </p>
     </footer>
   );
