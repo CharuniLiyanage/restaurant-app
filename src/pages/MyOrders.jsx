@@ -3,46 +3,47 @@ import { useEffect, useState } from "react";
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);
   const [ratingModal, setRatingModal] = useState(false);
-  const [currentOrderDate, setCurrentOrderDate] = useState(null);
+  const [currentOrder, setCurrentOrder] = useState(null);
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
 
-  // Load orders from localStorage
   useEffect(() => {
     const savedOrders = JSON.parse(localStorage.getItem("orders")) || [];
-    setOrders(savedOrders.reverse()); // latest first
+    setOrders(savedOrders.reverse());
   }, []);
 
-  // Confirm order received and open rating
-  const handleConfirmReceived = (date) => {
-    setCurrentOrderDate(date);
+  const handleConfirmReceived = (order) => {
+    setCurrentOrder(order);
     setRatingModal(true);
   };
 
-  // Submit rating + review and remove order
   const handleSubmitRating = () => {
     if (rating === 0) return alert("Please select a rating!");
 
-    // Save rating + review in localStorage (optional)
     const savedReviews = JSON.parse(localStorage.getItem("reviews")) || [];
-    savedReviews.push({
-      orderDate: currentOrderDate,
-      rating,
-      review,
-      date: new Date().toISOString(),
+
+    // Save review for each item in the order
+    currentOrder.items.forEach(item => {
+      savedReviews.push({
+        itemId: item.id,
+        rating: rating,
+        text: review,
+        date: new Date().toISOString(),
+      });
     });
+
     localStorage.setItem("reviews", JSON.stringify(savedReviews));
 
-    // Remove order from orders
-    const updatedOrders = orders.filter(order => order.date !== currentOrderDate);
+    // Remove order
+    const updatedOrders = orders.filter(o => o.date !== currentOrder.date);
     setOrders(updatedOrders);
     localStorage.setItem("orders", JSON.stringify([...updatedOrders].reverse()));
 
-    // Reset modal
+    // Reset
     setRatingModal(false);
     setRating(0);
     setReview("");
-    setCurrentOrderDate(null);
+    setCurrentOrder(null);
 
     alert("Thank you for your rating and review!");
   };
@@ -76,7 +77,7 @@ export default function MyOrders() {
 
             <div style={{ textAlign: "right", marginTop: "10px" }}>
               <button
-                onClick={() => handleConfirmReceived(order.date)}
+                onClick={() => handleConfirmReceived(order)}
                 style={{ padding: "10px 15px", background: "green", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}
               >
                 Confirm Received ✅
@@ -86,13 +87,10 @@ export default function MyOrders() {
         ))
       )}
 
-      {/* Rating + Review Modal */}
       {ratingModal && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 }}>
           <div style={{ background: "white", padding: "30px", borderRadius: "10px", width: "400px", textAlign: "center" }}>
             <h2>Rate Your Order ⭐</h2>
-            
-            {/* Stars */}
             <div style={{ display: "flex", justifyContent: "center", margin: "20px 0", gap: "10px" }}>
               {[1,2,3,4,5].map((star) => (
                 <span
@@ -105,7 +103,6 @@ export default function MyOrders() {
               ))}
             </div>
 
-            {/* Review Textarea */}
             <textarea
               placeholder="Write your review..."
               value={review}
@@ -113,7 +110,6 @@ export default function MyOrders() {
               style={{ width: "100%", padding: "10px", marginBottom: "15px", borderRadius: "5px", border: "1px solid #ccc" }}
             />
 
-            {/* Buttons */}
             <div>
               <button
                 onClick={handleSubmitRating}

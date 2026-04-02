@@ -25,13 +25,13 @@ import AdminOrders from "./pages/AdminOrders";
 // 🔐 User Protected Route
 function UserRoute({ children }) {
   const { user } = useAuth();
-  return user ? children : <Navigate to="/login" />;
+  return user ? children : <Navigate to="/login" replace />;
 }
 
 // 🔐 Admin Protected Route
 function AdminRoute({ children }) {
   const { isAdminLoggedIn } = useAdmin();
-  return isAdminLoggedIn ? children : <Navigate to="/admin-login" />;
+  return isAdminLoggedIn ? children : <Navigate to="/admin-login" replace />;
 }
 
 function App() {
@@ -45,23 +45,26 @@ function App() {
 
               <main className="main-content">
                 <Routes>
-                  {/* PUBLIC */}
-                  <Route path="/" element={<Home />} />
+                  {/* PUBLIC ROUTES */}
+                  <Route path="/" element={<Home />} /> {/* Public home page */}
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
 
-                  {/* USER PROTECTED */}
+                  {/* USER PROTECTED ROUTES */}
                   <Route path="/menu" element={<UserRoute><Menu /></UserRoute>} />
                   <Route path="/cart" element={<UserRoute><Cart /></UserRoute>} />
                   <Route path="/reservation" element={<UserRoute><Reservation /></UserRoute>} />
                   <Route path="/my-orders" element={<UserRoute><MyOrders /></UserRoute>} />
 
-                  {/* ADMIN */}
+                  {/* ADMIN ROUTES */}
                   <Route path="/admin-login" element={<AdminLogin />} />
                   <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
                   <Route path="/admin-reservations" element={<AdminRoute><AdminReservations /></AdminRoute>} />
-                  <Route path="/admin-orders" element={<AdminOrders />} />
+                  <Route path="/admin-orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />
+
+                  {/* 404 */}
+                  <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </main>
 

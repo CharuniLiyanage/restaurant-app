@@ -22,11 +22,15 @@ export default function Login() {
       return;
     }
 
+    // Call login from AuthContext
     const success = login(form.email, form.password);
 
     if (success) {
       setError("");
-      navigate("/"); // ✅ go to HOME (not menu)
+
+      // ✅ After login, redirect to Home page
+      // Home page can now display user info
+      navigate("/", { replace: true });
     } else {
       setError("Invalid email or password");
     }
