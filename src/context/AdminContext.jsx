@@ -29,37 +29,15 @@ export function AdminProvider({ children }) {
     localStorage.setItem("orders", JSON.stringify(orders));
   }, [orders]);
 
-  // ADD ORDER
-  const addOrder = (order) => {
-    const newOrder = {
-      ...order,
-      confirmed: false
-    };
-    setOrders((prev) => [...prev, newOrder]);
-  };
-
-  // CONFIRM ORDER (use date)
-  const confirmOrder = (date) => {
-    setOrders((prev) =>
-      prev.map((o) =>
-        o.date === date ? { ...o, confirmed: true } : o
-      )
-    );
-  };
-
-  // DELETE ORDER (use date)
-  const removeOrder = (date) => {
-    setOrders((prev) =>
-      prev.filter((o) => o.date !== date)
-    );
-  };
+  const addOrder = (order) => setOrders((prev) => [...prev, { ...order, confirmed: false }]);
+  const confirmOrder = (date) => setOrders((prev) => prev.map((o) => o.date === date ? { ...o, confirmed: true } : o));
+  const removeOrder = (date) => setOrders((prev) => prev.filter((o) => o.date !== date));
 
   // -------------------------
   // MESSAGES
   // -------------------------
   const [messages, setMessages] = useState([]);
-  const addMessage = (msg) =>
-    setMessages((prev) => [...prev, { ...msg, id: Date.now() }]);
+  const addMessage = (msg) => setMessages((prev) => [...prev, { ...msg, id: Date.now() }]);
 
   // -------------------------
   // RESERVATIONS
@@ -73,29 +51,13 @@ export function AdminProvider({ children }) {
     localStorage.setItem("reservations", JSON.stringify(reservations));
   }, [reservations]);
 
-  const addReservation = (reservation) => {
-    setReservations((prev) => [
-      ...prev,
-      { ...reservation, id: Date.now(), status: "Pending" }
-    ]);
-  };
-
-  const updateReservationStatus = (id, status) => {
-    setReservations((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status } : r))
-    );
-  };
-
-  const deleteReservation = (id) => {
-    setReservations((prev) =>
-      prev.filter((r) => r.id !== id)
-    );
-  };
-
+  const addReservation = (reservation) => setReservations((prev) => [...prev, { ...reservation, id: Date.now(), status: "Pending" }]);
+  const updateReservationStatus = (id, status) => setReservations((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
+  const deleteReservation = (id) => setReservations((prev) => prev.filter((r) => r.id !== id));
   const clearReservations = () => setReservations([]);
 
   // -------------------------
-  // REVIEWS (SYNC WITH LOCAL STORAGE)
+  // REVIEWS
   // -------------------------
   const [reviews, setReviews] = useState(() => {
     const saved = localStorage.getItem("reviews");
@@ -106,44 +68,37 @@ export function AdminProvider({ children }) {
     localStorage.setItem("reviews", JSON.stringify(reviews));
   }, [reviews]);
 
-  const addReview = (review) => {
-    setReviews((prev) => [...prev, { ...review, id: Date.now() }]);
-  };
+  const addReview = (review) => setReviews((prev) => [...prev, { ...review, id: Date.now() }]);
 
   // -------------------------
-  // ADMIN LOGIN
+  // ADMIN LOGIN (with persistence)
   // -------------------------
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => {
+    const saved = localStorage.getItem("isAdminLoggedIn");
+    return saved ? JSON.parse(saved) : false;
+  });
 
   const login = (password) => {
     if (password === "admin123") {
       setIsAdminLoggedIn(true);
+      localStorage.setItem("isAdminLoggedIn", "true"); // persist login
       return true;
     }
     return false;
   };
 
-  const logout = () => setIsAdminLoggedIn(false);
+  const logout = () => {
+    setIsAdminLoggedIn(false);
+    localStorage.removeItem("isAdminLoggedIn");
+  };
 
   // -------------------------
   // MENU OPERATIONS
   // -------------------------
-  const addMenuItem = (item) =>
-    setMenuItems((prev) => [...prev, item]);
+  const addMenuItem = (item) => setMenuItems((prev) => [...prev, item]);
+  const deleteMenuItem = (id) => setMenuItems((prev) => prev.filter((item) => item.id !== id));
+  const updateMenuItem = (updatedItem) => setMenuItems((prev) => prev.map((item) => (item.id === updatedItem.id ? updatedItem : item)));
 
-  const deleteMenuItem = (id) =>
-    setMenuItems((prev) =>
-      prev.filter((item) => item.id !== id)
-    );
-
-  const updateMenuItem = (updatedItem) =>
-    setMenuItems((prev) =>
-      prev.map((item) =>
-        item.id === updatedItem.id ? updatedItem : item
-      )
-    );
-
-  // Aliases (for your AdminDashboard)
   const updateItem = updateMenuItem;
   const deleteItem = deleteMenuItem;
 
