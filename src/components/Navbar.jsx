@@ -4,7 +4,9 @@ import { useAdmin } from "../context/AdminContext";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
-  const { isAdminLoggedIn, adminLogout } = useAdmin();
+
+  // ✅ FIX: correctly get admin logout
+  const { isAdminLoggedIn, logout: adminLogout } = useAdmin();
 
   const linkStyle = {
     margin: "0 10px",
@@ -41,8 +43,8 @@ export default function Navbar() {
         {!isAdminLoggedIn && user && (
           <>
             <Link to="/menu" style={linkStyle}>Menu</Link>
-            <Link to="/cart" style={linkStyle}>Cart </Link>
-            <Link to="/reservation" style={linkStyle}>Reservation </Link>
+            <Link to="/cart" style={linkStyle}>Cart</Link>
+            <Link to="/reservation" style={linkStyle}>Reservation</Link>
             <Link to="/my-orders" style={linkStyle}>My Orders</Link>
           </>
         )}
@@ -66,7 +68,9 @@ export default function Navbar() {
 
         {!isAdminLoggedIn && user && (
           <>
-            <span style={{ marginRight: "10px", fontWeight: "500", color: "#ddd" }}>👤 {user.name}</span>
+            <span style={{ marginRight: "10px", fontWeight: "500", color: "#ddd" }}>
+              👤 {user.name}
+            </span>
             <button onClick={logout} style={logoutBtn}>Logout</button>
           </>
         )}

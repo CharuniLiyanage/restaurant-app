@@ -1,12 +1,13 @@
 import { useState, useContext, useEffect } from "react";
-import { CartContext } from "../context/CartContext";
+import { CartContext } from "../context/CartContext"; // <- use CartContext
 import { useAdmin } from "../context/AdminContext";
 import "./Menu.css";
 import pizza from '../assets/pizza.jpeg';
 
 export default function Menu() {
-  const { addToCart, menuItems: adminItems } = useAdmin();
-  const { reviews: savedReviews } = useAdmin();
+  // Correct: get addToCart from CartContext
+  const { addToCart } = useContext(CartContext);  
+  const { menuItems: adminItems } = useAdmin(); // reviews handled separately
 
   const [menuItems, setMenuItems] = useState([]);
   const [reviews, setReviews] = useState([]);
@@ -83,7 +84,12 @@ export default function Menu() {
                   <p style={{ fontWeight: "bold", color: "#333" }}>
                     ⭐ {avgRating} / 5 ({itemReviews.length} reviews)
                   </p>
-                  <button onClick={() => { addToCart(item); alert(`${item.name} added to cart! 🛒`); }}>
+                  <button 
+                    onClick={() => { 
+                      addToCart(item); 
+                      alert(`${item.name} added to cart! 🛒`); 
+                    }}
+                  >
                     Add to Cart 🛒
                   </button>
 
