@@ -41,9 +41,47 @@ export default function Cart() {
     if (!name || !phone1 || !phone2 || !address) return alert("Please fill all details!");
     if (paymentMethod === "Card" && (!cardNumber || !cardExpiry || !cardCVV)) return alert("Please fill card details!");
 
-    const orders = JSON.parse(localStorage.getItem("orders")) || [];
-    orders.push({ items: cart, details: orderDetails, total, date: new Date().toISOString() });
-    localStorage.setItem("orders", JSON.stringify(orders));
+    // Minimal cart data to prevent quota exceeded
+    const minimalCart = cart.map(item => ({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+    }));
+
+    const newOrder = {
+      items: minimalCart,
+      details: {
+        name,
+        phone1,
+        phone2,
+        address,
+        location: orderDetails.location,
+        paymentMethod,
+      },
+      total,
+      date: new Date().toISOString()
+    };
+
+    // Get existing orders
+    let orders = [];
+    try {
+      orders = JSON.parse(localStorage.getItem("orders")) || [];
+    } catch (e) {
+      orders = [];
+    }
+
+    orders.push(newOrder);
+
+    // Keep only last 10 orders to avoid quota issues
+    if (orders.length > 10) orders = orders.slice(-10);
+
+    try {
+      localStorage.setItem("orders", JSON.stringify(orders));
+    } catch (e) {
+      console.error("Storage full, replacing with latest order");
+      localStorage.setItem("orders", JSON.stringify([newOrder]));
+    }
 
     setOrderConfirmed(true);
     clearCart();

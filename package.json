@@ -50,6 +50,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.27",
+    "gh-pages": "^6.3.0",
     "postcss": "^8.5.8",
     "tailwindcss": "^4.2.2"
   },
@@ -65,4 +66,5 @@
   "bugs": {
     "url": "https://github.com/CharuniLiyanage/restaurant-app/issues"
   },
-"homepage": "."}
+  "homepage": "."
+}
