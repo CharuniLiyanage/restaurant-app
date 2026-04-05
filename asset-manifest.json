@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/restaurant-app/static/css/main.eb18d2cc.css",
+    "main.js": "/restaurant-app/static/js/main.7a98e4c0.js",
+    "static/js/453.0b7c1e2b.chunk.js": "/restaurant-app/static/js/453.0b7c1e2b.chunk.js",
+    "static/media/hero1.jpg": "/restaurant-app/static/media/hero1.cd22ebc32f1c69484c9b.jpg",
+    "static/media/pizza.jpeg": "/restaurant-app/static/media/pizza.69bed283e10f2c40d09c.jpeg",
+    "index.html": "/restaurant-app/index.html",
+    "main.eb18d2cc.css.map": "/restaurant-app/static/css/main.eb18d2cc.css.map",
+    "main.7a98e4c0.js.map": "/restaurant-app/static/js/main.7a98e4c0.js.map",
+    "453.0b7c1e2b.chunk.js.map": "/restaurant-app/static/js/453.0b7c1e2b.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.eb18d2cc.css",
+    "static/js/main.7a98e4c0.js"
+  ]
+}
